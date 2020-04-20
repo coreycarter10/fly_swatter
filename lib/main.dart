@@ -1,13 +1,20 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/util.dart';
 import 'package:flame/game.dart';
 
+import 'components/game_box.dart';
+import 'components/fly.dart';
+
+final flameUtil = Util();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final flameUtil = Util();
   await flameUtil.fullScreen();
   await flameUtil.setOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
@@ -18,23 +25,24 @@ void main() async {
 }
 
 class FlySwatterGame extends Game {
+  static final random = Random();
+
   Size _screenSize;
+  Size get screenSize => _screenSize;
+
+  double _tileSize;
+  double get tileSize => _tileSize;
 
   GameBox _bg;
-  GameBox _target;
+  List<Fly> _flies;
 
-  @override
-  void resize(Size size) {
-    if (_screenSize != null) {
-      return;
-    }
-
-    _screenSize = size;
-
-    initGameObjects();
+  FlySwatterGame() {
+    _init();
   }
 
-  void initGameObjects() {
+  void _init() async {
+    resize(await flameUtil.initialDimensions());
+
     _bg = GameBox(
       x: 0,
       y: 0,
@@ -43,49 +51,40 @@ class FlySwatterGame extends Game {
       color: Colors.black,
     );
 
-    final targetSize = 150.0;
-    final halfTargetSize = targetSize / 2;
-    _target = GameBox(
-      x: (_screenSize.width / 2) - halfTargetSize,
-      y: (_screenSize.height / 2) - halfTargetSize,
-      w: targetSize,
-      h: targetSize,
-      color: Colors.white,
-    );
+    _flies = [];
+
+    _spawnFly();
+  }
+
+  @override
+  void resize(Size size) {
+    _screenSize = size;
+    _tileSize = _screenSize.width / 9;
   }
 
   @override
   void update(double dt) {
-
+    _flies.forEach((Fly fly) => fly.update(dt));
+    _flies.removeWhere((Fly fly) => fly.status == FlyStatus.gone);
   }
 
   @override
   void render(Canvas canvas) {
     _bg.render(canvas);
-    _target.render(canvas);
+    _flies.forEach((Fly fly) => fly.render(canvas));
+  }
+
+  void _spawnFly() {
+    final y = random.nextDouble() * (_screenSize.height - _tileSize);
+    _flies.add(Fly(game: this, x: 0, y: y));
   }
 
   void onTapDown(TapDownDetails details) {
-    if (_target.hitTest(details.globalPosition)) {
-      _target.setColor(Colors.green);
-    }
+    _flies.forEach((Fly fly) {
+      if (fly.hitTest(details.globalPosition)) {
+        fly.kill();
+        scheduleMicrotask(_spawnFly);
+      }
+    });
   }
-}
-
-class GameBox {
-  Paint _paint;
-  Rect _rect;
-
-  GameBox({double x, double y, double w, double h, Color color}) {
-    _paint = Paint()..color = color;
-    _rect = Rect.fromLTWH(x, y, w, h);
-  }
-
-  void render(Canvas canvas) {
-    canvas.drawRect(_rect, _paint);
-  }
-
-  void setColor(Color color) => _paint.color = color;
-
-  bool hitTest(Offset offset) => _rect.contains(offset);
 }
