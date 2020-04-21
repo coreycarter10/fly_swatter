@@ -7,7 +7,7 @@ import 'game_box.dart';
 
 class Fly {
   static const fallSpeed = 12;
-  
+
   final FlySwatterGame game;
 
   FlyStatus _status;
@@ -25,11 +25,6 @@ class Fly {
       case FlyStatus.alive: _fly(dt); break;
       case FlyStatus.dead: _fall(dt); break;
       default: break;
-    }
-
-    // is the fly off-screen?
-    if (_box.y > game.screenSize.height) {
-      _status = FlyStatus.gone;
     }
   }
 
@@ -50,11 +45,15 @@ class Fly {
 
   void _fall(double dt) {
     _box.translate(0, game.tileSize * fallSpeed * dt);
+
+    // is the fly off-screen?
+    if (_box.y > game.screenSize.height) {
+      game.removeFly(this);
+    }
   }
 }
 
 enum FlyStatus {
   alive,
   dead,
-  gone,
 }
