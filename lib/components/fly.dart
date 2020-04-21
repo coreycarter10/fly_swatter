@@ -2,23 +2,25 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-import 'game_box.dart';
+import '../game.dart';
+import 'game_rect.dart';
 
-class Fly {
+class Fly extends GameRect {
   static const fallSpeed = 12;
 
   final FlySwatterGame game;
 
-  FlyStatus _status;
+  FlyStatus _status = FlyStatus.alive;
   FlyStatus get status => _status;
 
-  GameBox _box;
-
-  Fly({this.game, double x, double y}) {
-    _status = FlyStatus.alive;
-    _box = GameBox(x: x, y: y, w: game.tileSize, h: game.tileSize, color: Colors.green[100]);
-  }
+  Fly({
+    @required this.game,
+    @required double x,
+    @required double y,
+    @required double w,
+    @required double h,
+    Color color,
+  }) : super(x: x, y: y, w: w, h: h, color: color ?? Colors.green[100]);
 
   void update(double dt) {
     switch (_status) {
@@ -28,14 +30,8 @@ class Fly {
     }
   }
 
-  void render(Canvas canvas) {
-    _box.render(canvas);
-  }
-
-  bool hitTest(Offset offset) => _box.hitTest(offset);
-
   void kill() {
-    _box.setColor(Colors.red);
+    setColor(Colors.red);
     _status = FlyStatus.dead;
   }
 
@@ -44,10 +40,10 @@ class Fly {
   }
 
   void _fall(double dt) {
-    _box.translate(0, game.tileSize * fallSpeed * dt);
+    translate(0, h * fallSpeed * dt);
 
     // is the fly off-screen?
-    if (_box.y > game.screenSize.height) {
+    if (isOffScreen(game.screenSize)) {
       game.removeFly(this);
     }
   }

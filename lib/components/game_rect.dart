@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
-class GameBox {
+class GameRect {
   Paint _paint;
   Rect _rect;
 
-  GameBox({double x, double y, double w, double h, Color color}) {
+  GameRect({
+      @required double x,
+      @required double y,
+      @required double w,
+      @required double h,
+      @required Color color}) {
     _paint = Paint()..color = color;
     _rect = Rect.fromLTWH(x, y, w, h);
   }
@@ -16,6 +21,8 @@ class GameBox {
   void setColor(Color color) => _paint.color = color;
 
   bool hitTest(Offset offset) => _rect.contains(offset);
+
+  bool isOffScreen(Size screenSize) => x < 0 || x > screenSize.width || y < 0 || y > screenSize.height;
 
   void translate(double x, double y) {
     _rect = _rect.translate(x, y);
