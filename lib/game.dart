@@ -6,7 +6,7 @@ import 'package:flame/game.dart';
 
 import 'main.dart';
 import 'components/backyard.dart';
-import 'components/fly.dart';
+import 'components/flies.dart';
 
 class FlySwatterGame extends Game {
   static const tileRows = 23;
@@ -37,7 +37,6 @@ class FlySwatterGame extends Game {
     _spawnFly();
   }
 
-
   @override
   void resize(Size size) {
     _screenSize = size;
@@ -56,13 +55,25 @@ class FlySwatterGame extends Game {
   }
 
   void _spawnFly() {
-    final y = random.nextDouble() * (_screenSize.height - _tileSize);
-    _flies.add(Fly(game: this, x: 0, y: y, w: tileSize, h: tileSize));
+    final y = random.nextDouble() * (_screenSize.height - _tileSize * 2);
+    _flies.add(_getRandomFly(y: y));
+  }
+
+  Fly _getRandomFly({double x = 0, double y = 0}) {
+    switch (random.nextInt(5)) {
+      case 0: return HouseFly(game: this, x: x, y: y); break;
+      case 1: return DroolerFly(game: this, x: x, y: y); break;
+      case 2: return AgileFly(game: this, x: x, y: y); break;
+      case 3: return MachoFly(game: this, x: x, y: y); break;
+      case 4: return HungryFly(game: this, x: x, y: y); break;
+    }
+
+    return null;
   }
 
   void onTapDown(TapDownDetails details) {
     _flies.forEach((Fly fly) {
-      if (fly.status == FlyStatus.alive && fly.hitTest(details.globalPosition)) {
+      if (fly.status == FlyStatus.flying && fly.hitTest(details.globalPosition)) {
         fly.kill();
         scheduleMicrotask(_spawnFly);
       }

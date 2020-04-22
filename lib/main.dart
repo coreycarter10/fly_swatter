@@ -20,6 +20,11 @@ void main() async {
 
   await Flame.images.loadAll(<String>[
     'bg/backyard.png',
+    'bg/lose-splash.png',
+    'branding/title.png',
+    'ui/dialog-help.png',
+    'ui/icon-help.png',
+    'ui/start-button.png',
     'flies/agile-fly-1.png',
     'flies/agile-fly-2.png',
     'flies/agile-fly-dead.png',

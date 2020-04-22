@@ -44,7 +44,7 @@ class Fly extends GameRect {
 
     // is the fly off-screen?
     if (isOffScreen(game.screenSize)) {
-      game.removeFly(this);
+//      game.removeFly(this);
     }
   }
 }
