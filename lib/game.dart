@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
 import 'main.dart';
+import 'views/home_view.dart';
 import 'components/backyard.dart';
 import 'components/flies.dart';
 
 class FlySwatterGame extends Game {
-  static const tileRows = 23;
   static const tileCols = 9;
+  static const tileRows = 23;
 
   static final random = Random();
 
@@ -19,6 +20,10 @@ class FlySwatterGame extends Game {
 
   double _tileSize;
   double get tileSize => _tileSize;
+
+  View _view = View.home;
+
+  HomeView _homeView;
 
   Backyard _bg;
   List<Fly> _flies;
@@ -30,10 +35,10 @@ class FlySwatterGame extends Game {
   void _init() async {
     resize(await flameUtil.initialDimensions());
 
+    _homeView = HomeView(this);
+
     _bg = Backyard(this);
-
     _flies = [];
-
     _spawnFly();
   }
 
@@ -52,6 +57,10 @@ class FlySwatterGame extends Game {
   void render(Canvas canvas) {
     _bg.render(canvas);
     _flies.forEach((Fly fly) => fly.render(canvas));
+
+    if (_view == View.home) {
+      _homeView.render(canvas);
+    }
   }
 
   void _spawnFly() {
@@ -72,13 +81,26 @@ class FlySwatterGame extends Game {
   }
 
   void onTapDown(TapDownDetails details) {
-    _flies.forEach((Fly fly) {
-      if (fly.status == FlyStatus.flying && fly.hitTest(details.globalPosition)) {
-        fly.kill();
-        scheduleMicrotask(_spawnFly);
-      }
-    });
+    if (_view == View.playing) {
+      _flies.forEach((Fly fly) {
+        if (fly.status == FlyStatus.flying && fly.hitTest(details.globalPosition)) {
+          fly.kill();
+          scheduleMicrotask(_spawnFly);
+        }
+      });
+    }
+    
+    if (_view == View.home) {
+      _homeView.onTapDown(details);
+    }
   }
 
+  void startGame() => _view = View.playing;
   void removeFly(Fly fly) => scheduleMicrotask(() => _flies.remove(fly));
+}
+
+enum View {
+  home,
+  playing,
+  lost,
 }
