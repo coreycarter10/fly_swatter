@@ -3,19 +3,19 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 
 import '../game.dart';
-import '../components/title.dart';
+import '../components/lose.dart';
 import '../components/start_button.dart';
 import '../components/help_button.dart';
 
-class HomeView {
+class LostView {
   final FlySwatterGame game;
 
-  Title _title;
+  Lose _lose;
   StartButton _startButton;
   HelpButton _helpButton;
 
-  HomeView(this.game) {
-    _title = Title(game);
+  LostView(this.game) {
+    _lose = Lose(game);
     _startButton = StartButton(game);
     _helpButton = HelpButton(game);
   }
@@ -25,7 +25,7 @@ class HomeView {
   }
 
   void render(Canvas canvas) {
-    _title.render(canvas);
+    _lose.render(canvas);
     _startButton.render(canvas);
     _helpButton.render(canvas);
   }
