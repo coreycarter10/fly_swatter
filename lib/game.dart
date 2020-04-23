@@ -11,6 +11,7 @@ import 'views/lost_view.dart';
 import 'views/help_view.dart';
 import 'components/backyard.dart';
 import 'components/flies.dart';
+import 'components/score.dart';
 
 class FlySwatterGame extends Game {
   static const tileCols = 9;
@@ -23,6 +24,8 @@ class FlySwatterGame extends Game {
 
   Size _screenSize;
   Size get screenSize => _screenSize;
+  double get centerX => screenSize.width / 2;
+  double get centerY => screenSize.height / 2;
 
   double _tileSize;
   double get tileSize => _tileSize;
@@ -36,8 +39,12 @@ class FlySwatterGame extends Game {
 
   Backyard _bg;
   List<Fly> _flies;
+  Score _scoreDisplay;
 
   Timer _spawnTimer;
+
+  int _score;
+  int get score => _score;
 
   FlySwatterGame() {
     _init();
@@ -51,6 +58,7 @@ class FlySwatterGame extends Game {
     _helpView = HelpView(this);
 
     _bg = Backyard(this);
+    _scoreDisplay = Score(this);
     _flies = [];
 
     _home();
@@ -60,6 +68,7 @@ class FlySwatterGame extends Game {
     _view = View.playing;
     _flies.clear();
     _spawnTimer = Timer.periodic(spawnInterval, _spawnFly);
+    _score = 0;
     _spawnFly();
   }
 
@@ -86,6 +95,10 @@ class FlySwatterGame extends Game {
   @override
   void update(double dt) {
     _flies.forEach((Fly fly) => fly.update(dt));
+
+    if (_view == View.playing) {
+      _scoreDisplay.update(dt);
+    }
   }
 
   @override
@@ -93,14 +106,11 @@ class FlySwatterGame extends Game {
     _bg.render(canvas);
     _flies.forEach((Fly fly) => fly.render(canvas));
 
-    if (_view == View.home) {
-      _homeView.render(canvas);
-    }
-    else if (_view == View.lost) {
-      _lostView.render(canvas);
-    }
-    else if (_view == View.help) {
-      _helpView.render(canvas);
+    switch (_view) {
+      case View.playing: _scoreDisplay.render(canvas); break;
+      case View.home: _homeView.render(canvas); break;
+      case View.lost: _lostView.render(canvas); break;
+      case View.help: _helpView.render(canvas); break;
     }
   }
 
@@ -137,6 +147,7 @@ class FlySwatterGame extends Game {
           if (fly.status == FlyStatus.flying && fly.hitTest(details.globalPosition)) {
             gotKill = true;
             fly.kill();
+            _score++;
           }
         });
 

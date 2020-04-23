@@ -33,9 +33,6 @@ abstract class Fly {
     double sizeFactor = 1,
     double speed = 3,
   }) {
-    _sprites[FlyStatus.flying] = SpriteSet.fromImagePaths(flyingImagePaths);
-    _sprites[FlyStatus.dead] = SpriteSet.fromImagePaths([deadImagePath]);
-
     _flySize = game.tileSize * sizeFactor;
 
     final sizeDelta = _flySize / 4;
@@ -44,6 +41,9 @@ abstract class Fly {
 
     _rect = Rect.fromLTWH(x, y, _inflatedRect.width, _inflatedRect.height);
     _hitRect = _rect.deflate(sizeDelta);
+
+    _sprites[FlyStatus.flying] = SpriteSet.fromImagePaths(flyingImagePaths);
+    _sprites[FlyStatus.dead] = SpriteSet.fromImagePaths([deadImagePath]);
 
     _setTargetLocation();
     _speed = speed;
