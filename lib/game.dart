@@ -31,6 +31,8 @@ class FlySwatterGame extends Game {
   double get tileSize => _tileSize;
 
   View _view;
+  View get view => _view;
+
   View _back;
 
   HomeView _homeView;
@@ -61,7 +63,7 @@ class FlySwatterGame extends Game {
     _scoreDisplay = Score(this);
     _flies = [];
 
-    _home();
+    home();
   }
 
   void play() {
@@ -77,11 +79,11 @@ class FlySwatterGame extends Game {
     _view = View.help;
   }
 
-  void _home() {
+  void home() {
     _view = View.home;
   }
 
-  void _lost() {
+  void lost() {
     _view = View.lost;
     _spawnTimer.cancel();
   }
@@ -122,7 +124,7 @@ class FlySwatterGame extends Game {
       _flies.add(_getRandomFly(y: y));
     }
     else {
-      _lost();
+      lost();
     }
   }
 
@@ -152,12 +154,12 @@ class FlySwatterGame extends Game {
         });
 
         if (!gotKill) {
-          _lost();
+          lost();
         }
         break;
       case View.home:  _homeView.onTapDown(details); break;
       case View.lost:  _lostView.onTapDown(details); break;
-      case View.help:  _back == View.home ? _home() : _lost(); break;
+      case View.help:  _back == View.home ? home() : lost(); break;
     }
   }
 

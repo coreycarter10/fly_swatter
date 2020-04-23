@@ -23,7 +23,7 @@ class Score {
 
   final FlySwatterGame game;
 
-  Offset _pos = Offset.zero;
+  Offset _pos;
 
   int _score;
 

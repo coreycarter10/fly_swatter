@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../game.dart';
+import 'callout.dart';
 import '../utils/sprite_set.dart';
 
 abstract class Fly {
@@ -15,6 +16,8 @@ abstract class Fly {
 
   Rect _rect;
   Rect _hitRect;
+
+  Callout _callout;
 
   FlyStatus _status = FlyStatus.flying;
   FlyStatus get status => _status;
@@ -41,6 +44,7 @@ abstract class Fly {
 
     _rect = Rect.fromLTWH(x, y, _inflatedRect.width, _inflatedRect.height);
     _hitRect = _rect.deflate(sizeDelta);
+    _callout = Callout(this);
 
     _sprites[FlyStatus.flying] = SpriteSet.fromImagePaths(flyingImagePaths);
     _sprites[FlyStatus.dead] = SpriteSet.fromImagePaths([deadImagePath]);
@@ -53,7 +57,10 @@ abstract class Fly {
     // at 60fps, dt will be ~0.0166
 
     switch (_status) {
-      case FlyStatus.flying: _fly(dt); break;
+      case FlyStatus.flying:
+        _fly(dt);
+        if (game.view == View.playing) _callout.update(dt);
+        break;
       case FlyStatus.dead: _fall(dt); break;
       default: break;
     }
@@ -65,6 +72,10 @@ abstract class Fly {
 
   void render(Canvas canvas) {
     _sprites[_status].currentSprite.renderRect(canvas, _rect);
+
+    if (_status == FlyStatus.flying && game.view == View.playing) {
+      _callout.render(canvas);
+    }
   }
 
   void kill() {
@@ -112,6 +123,11 @@ abstract class Fly {
   double get y => _rect.top;
   double get w => _rect.width;
   double get h => _rect.height;
+
+  double get hitX => _hitRect.left;
+  double get hitY => _hitRect.top;
+  double get hitW => _hitRect.width;
+  double get hitH => _hitRect.height;
 }
 
 class HouseFly extends Fly {

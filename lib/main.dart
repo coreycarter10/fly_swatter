@@ -22,6 +22,7 @@ void main() async {
     'bg/backyard.png',
     'bg/lose-splash.png',
     'branding/title.png',
+    'ui/callout.png',
     'ui/dialog-help.png',
     'ui/icon-help.png',
     'ui/start-button.png',

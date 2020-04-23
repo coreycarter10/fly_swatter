@@ -34,7 +34,7 @@ class LostView {
     if (_startButton.hitTest(details.globalPosition)) {
       game.play();
     }
-    if (_helpButton.hitTest(details.globalPosition)) {
+    else if (_helpButton.hitTest(details.globalPosition)) {
       game.help();
     }
   }
