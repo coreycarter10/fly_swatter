@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:supercharged/supercharged.dart';
 
-import 'main.dart';
 import 'views/home_view.dart';
 import 'views/lost_view.dart';
 import 'views/help_view.dart';
@@ -48,13 +47,12 @@ class FlySwatterGame extends Game {
   int _score;
   int get score => _score;
 
-  FlySwatterGame() {
+  FlySwatterGame(Size screenSize) {
+    resize(screenSize);
     _init();
   }
 
   void _init() async {
-    resize(await flameUtil.initialDimensions());
-
     _homeView = HomeView(this);
     _lostView = LostView(this);
     _helpView = HelpView(this);

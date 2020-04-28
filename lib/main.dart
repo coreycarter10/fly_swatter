@@ -1,22 +1,20 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flame/util.dart';
 import 'package:flame/flame.dart';
 
 import 'game.dart';
 
-final flameUtil = Util();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await flameUtil.fullScreen();
-  await flameUtil.setOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await Flame.util.fullScreen();
+  await Flame.util.setOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  final game = FlySwatterGame();
+  final game = FlySwatterGame(await Flame.util.initialDimensions());
+
   final tapper = TapGestureRecognizer()..onTapDown = game.onTapDown;
-  flameUtil.addGestureRecognizer(tapper);
+  Flame.util.addGestureRecognizer(tapper);
 
   await Flame.images.loadAll(<String>[
     'bg/backyard.png',
